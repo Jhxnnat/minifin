@@ -41,7 +41,9 @@ just check            # verify Justfile syntax
 
 `just --list` has the rest. `IMAGE_NAME` defaults to the value in the Justfile
 and is overridable by the `IMAGE_NAME` environment variable; CI sets that from
-the repository name.
+the repository name. The vendor comes from `IMAGE_VENDOR` or the repository
+owner and is lowercased by the recipe: OCI repository paths cannot carry
+uppercase letters, and a GitHub login can.
 
 ## Pinning
 

@@ -12,10 +12,6 @@
 # App IDs are listed at https://flathub.org/ and verified by
 # `just validate-flatpaks` before a change can land.
 
-# Email, calendar and newsgroup client. Fedora ships no mail client by default.
-[Flatpak Preinstall org.mozilla.Thunderbird]
-Branch=stable
-
 # Audit and restrict the permissions of installed Flatpaks. There is no RPM
 # equivalent, so this only makes sense as a Flatpak.
 [Flatpak Preinstall com.github.tchx84.Flatseal]

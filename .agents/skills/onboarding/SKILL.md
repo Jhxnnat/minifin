@@ -28,8 +28,14 @@ before. Substitute your own `{owner}/{repo}` throughout.
 
 ## 1. Rename the project
 
-See the Quick start in [README.md](../../../README.md#quick-start). Three identity
-sites, and `just test-contract` fails when they disagree.
+The published name is the repository name. Three files carry it as a literal,
+and `just test-contract` fails when they disagree:
+
+- `Containerfile` — the `# Name:` comment and `ARG IMAGE_NAME`
+- `Justfile` — the `IMAGE_NAME` default
+- `artifacthub-repo.yml` — `repositoryID`
+
+Grep for the old name afterwards to catch the prose and the examples.
 
 ## 2. Enable Actions
 

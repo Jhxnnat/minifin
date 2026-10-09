@@ -3,10 +3,10 @@
 set -euo pipefail
 
 ###############################################################################
-# Example: GNOME Shell extensions
+# GNOME Shell extensions
 ###############################################################################
-# Installs GNOME Shell extensions system-wide and enables them for every user,
-# including users created after the image was built.
+# Installs the image's GNOME Shell extensions system-wide and enables them for
+# every user, including users created after the image was built.
 #
 # Each extension is unpacked into /usr/share/gnome-shell/extensions/<uuid>/,
 # where the directory name has to be the uuid the extension declares in its
@@ -14,11 +14,7 @@ set -euo pipefail
 # schema default, which is how Bluefin enables its own set. A user who has
 # already chosen extensions in dconf keeps that choice.
 #
-# To turn it on:
-#   1. mv build/40-gnome-extensions.sh.example build/40-gnome-extensions.sh
-#   2. Copy the RUN block for 40-gnome-extensions.sh from build/README.md into
-#      the Containerfile, after the 20-packages-and-services.sh block.
-#   3. Add the extensions you want to the lists in sections 1 and 2.
+# The set is deliberately small; add a uuid to EGO_EXTENSIONS to ship more.
 ###############################################################################
 
 # The shell major version is what extensions.gnome.org knows about (50.4 -> 50).
@@ -26,7 +22,7 @@ SHELL_MAJOR="$(gnome-shell --version | awk '{print $3}' | cut -d. -f1)"
 EXTENSIONS_DIR=/usr/share/gnome-shell/extensions
 OVERRIDE_FILE=/usr/share/glib-2.0/schemas/zz1-custom-extensions.gschema.override
 
-# Every uuid installed below. Used in section 3 to build the enable list, so it
+# Every uuid installed below. Used in the enable step to build the list, so it
 # never has to be kept in sync by hand.
 INSTALLED_EXTENSIONS=()
 
@@ -39,7 +35,7 @@ INSTALLED_EXTENSIONS=()
 
 EGO_EXTENSIONS=(
 	caffeine@patapon.info
-	blur-my-shell@aunetx
+	just-perfection-desktop@just-perfection
 )
 
 for uuid in "${EGO_EXTENSIONS[@]}"; do
@@ -55,39 +51,7 @@ for uuid in "${EGO_EXTENSIONS[@]}"; do
 done
 
 ###############################################################################
-# 2. From a GitHub repository
-###############################################################################
-# One line per extension, for projects that publish sources instead of a release
-# archive, such as bluefin-bling. Each line is the repository and the path to
-# one extension inside it. All entries come from the same branch.
-
-GITHUB_BRANCH="main"
-
-GITHUB_EXTENSIONS=(
-	"projectbluefin/bluefin-bling extensions/power-status-color"
-	"projectbluefin/bluefin-bling extensions/syncthing-toggle"
-)
-
-for entry in "${GITHUB_EXTENSIONS[@]}"; do
-	read -r repository path <<<"${entry}"
-
-	work_dir="$(mktemp -d)"
-	curl -fsSL "https://codeload.github.com/${repository}/tar.gz/refs/heads/${GITHUB_BRANCH}" |
-		tar -xz -C "${work_dir}"
-
-	# The archive root is <repository>-<branch>. Reading the uuid from the
-	# extension keeps the install directory in step with its metadata.json.
-	source_dir="${work_dir}/${repository#*/}-${GITHUB_BRANCH}/${path}"
-	uuid="$(jq -r .uuid "${source_dir}/metadata.json")"
-	mkdir -p "${EXTENSIONS_DIR}/${uuid}"
-	cp -a "${source_dir}/." "${EXTENSIONS_DIR}/${uuid}/"
-	rm -rf "${work_dir}"
-
-	INSTALLED_EXTENSIONS+=("${uuid}")
-done
-
-###############################################################################
-# 3. Enable them
+# 2. Enable them
 ###############################################################################
 
 # Extensions ship schema XML, never a compiled cache, and some ship no schemas.

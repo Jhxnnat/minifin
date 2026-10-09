@@ -57,7 +57,7 @@ jobs:
       # `use_merge_queue`: `auto_merge` states how the PR is merged at all.
       # It defaults to true, so without this the body advertises an auto-merge
       # schedule (bluefin/dakota Tuesday, bluefin-lts Thursday) that never runs
-      # here — finpilot is a personal fork merged by hand. Operators waiting for
+      # here — minifin is a personal fork merged by hand. Operators waiting for
       # that auto-merge never see one, so set it false to match the manual merge
       # below. Enrollment stays governed separately by enqueue_promotion.
       auto_merge: false

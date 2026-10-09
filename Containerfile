@@ -1,7 +1,7 @@
 ###############################################################################
 # PROJECT NAME CONFIGURATION
 ###############################################################################
-# Name: finpilot
+# Name: minifin
 #
 # The authoritative name at publish time is the repository name: build-image.yml
 # derives IMAGE_NAME from ${{ github.event.repository.name }} and pushes the
@@ -10,7 +10,8 @@
 #
 # Two other files carry the name as a literal: the Justfile's IMAGE_NAME default
 # and artifacthub-repo.yml's repositoryID. tests/contract/identity_test.bats
-# fails when the three disagree. See "Quick start" in README.md.
+# fails when the three disagree. See .agents/skills/onboarding/SKILL.md for the
+# rename steps.
 ###############################################################################
 
 ###############################################################################
@@ -54,8 +55,8 @@ FROM quay.io/fedora-ostree-desktops/silverblue:44@sha256:1780e5368a3610c61e69a20
 
 # Image identity - these define how bootc, fastfetch, and the ublue ecosystem
 # recognize your image. Change these to match your project name.
-ARG IMAGE_NAME="finpilot"
-ARG IMAGE_VENDOR="projectbluefin"
+ARG IMAGE_NAME="minifin"
+ARG IMAGE_VENDOR="jhxnnat"
 ARG UBLUE_IMAGE_TAG="stable"
 # Supplied by `just build` from the base image's FROM line.
 ARG BASE_IMAGE_NAME=""
@@ -105,6 +106,16 @@ RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     /ctx/build/20-packages-and-services.sh
 
+### GNOME EXTENSIONS
+## Installs the image's GNOME Shell extensions system-wide and enables them via
+## a schema override. Runs after the package phase, which supplies jq.
+RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
+    --mount=type=cache,dst=/var/cache/libdnf5 \
+    --mount=type=cache,dst=/var/cache/rpm-ostree \
+    --mount=type=tmpfs,dst=/boot \
+    --mount=type=tmpfs,dst=/tmp \
+    /ctx/build/40-gnome-extensions.sh
+
 ### CLEANUP
 ## Finalises package and Flatpak sources, then prunes build artifacts before
 ## linting. /run is deliberately not mounted as tmpfs here: the script must
@@ -128,7 +139,7 @@ RUN rm -rf /opt && ln -s /var/opt /opt
 ## builds and CI supply the dynamic values through `just build`; keeping these
 ## ARGs late prevents a new version or timestamp from invalidating package and
 ## overlay layers above.
-ARG IMAGE_DESC="My Customized Universal Blue Image"
+ARG IMAGE_DESC="A minimal Bluefin desktop image"
 ARG IMAGE_CREATED=""
 ARG IMAGE_LOGO_URL="https://avatars.githubusercontent.com/u/120078124?s=200&v=4"
 ARG IMAGE_KEYWORDS="bootc,ublue,universal-blue"

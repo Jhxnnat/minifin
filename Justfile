@@ -1,7 +1,7 @@
-export IMAGE_NAME := env("IMAGE_NAME", "finpilot")
+export IMAGE_NAME := env("IMAGE_NAME", "minifin")
 export DEFAULT_TAG := env("DEFAULT_TAG", "stable")
 export PODMAN := env("PODMAN", "podman")
-export REPO_ORG := env("GITHUB_REPOSITORY_OWNER", "projectbluefin")
+export REPO_ORG := env("GITHUB_REPOSITORY_OWNER", "jhxnnat")
 export bib_image := env("BIB_IMAGE", "ghcr.io/osbuild/bootc-image-builder:latest@sha256:b16cb7f2bed646f24a8c1448994c9746ebdc53a2ea0e29cc976623a0bb7b598b")
 export qemu_image := env("QEMU_IMAGE", "ghcr.io/qemus/qemu:7.50@sha256:e7f6fda52503a546fd649670ba46e4bc23dc6dcef275bc3fac48877fbbc430df")
 export vm_ram := env("VM_RAM", "8192")
@@ -137,7 +137,7 @@ sudoif command *args:
 # registry already has that version, and a clean worktree also stamps the short
 # HEAD SHA.
 #
-# Example: just build finpilot stable-testing
+# Example: just build minifin stable-testing
 
 # Build the image using the specified parameters
 [group('Image')]
@@ -159,8 +159,11 @@ build $target_image=IMAGE_NAME $tag=DEFAULT_TAG:
     fi
 
     # Image identity, resolved once: an explicit IMAGE_VENDOR wins, otherwise
-    # fall back to the repository owner GitHub Actions supplies.
+    # fall back to the repository owner GitHub Actions supplies. OCI repository
+    # paths are lowercase-only and a GitHub login can carry uppercase letters,
+    # so normalize before the value reaches image-info.json and the layer cache.
     image_vendor="${IMAGE_VENDOR:-${REPO_ORG}}"
+    image_vendor="${image_vendor,,}"
 
     # target_image names the local image, and the VM recipes pass it with a
     # `localhost/` prefix. The identity must not carry that prefix: image-info

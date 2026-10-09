@@ -200,7 +200,7 @@ podman_build_args() {
     local args
     args="$(podman_build_args)"
     [[ "${args}" == *"--build-arg IMAGE_NAME=finpilot"* ]]
-    [[ "${args}" == *"--build-arg IMAGE_VENDOR=projectbluefin"* ]]
+    [[ "${args}" == *"--build-arg IMAGE_VENDOR=jhxnnat"* ]]
     [[ "${args}" == *"--build-arg UBLUE_IMAGE_TAG=stable"* ]]
     [[ "${args}" == *"--build-arg BASE_IMAGE_NAME=silverblue"* ]]
 }
@@ -231,6 +231,19 @@ podman_build_args() {
     args="$(podman_build_args)"
     [[ "${args}" == *"--build-arg IMAGE_VENDOR=acme"* ]]
     [[ "${args}" == *"--build-arg UBLUE_IMAGE_TAG=pinned"* ]]
+}
+
+@test "build: lowercases a vendor that carries uppercase letters" {
+    # OCI repository paths are lowercase-only, and a GitHub login may not be.
+    # The vendor feeds image-info.json's image-ref and the layer cache, so it is
+    # normalized before either is composed.
+    GITHUB_REPOSITORY_OWNER="Acme-Org" run_just build finpilot stable
+    [ "$status" -eq 0 ]
+
+    local args
+    args="$(podman_build_args)"
+    [[ "${args}" == *"--build-arg IMAGE_VENDOR=acme-org"* ]]
+    [[ "${args}" == *"--cache-from ghcr.io/acme-org/finpilot"* ]]
 }
 
 # The positional target_image wins for the image identity, minus any local
@@ -320,14 +333,14 @@ podman_build_args() {
     [ "$status" -eq 0 ]
     local args
     args="$(podman_build_args)"
-    [[ "${args}" == *"--cache-from ghcr.io/projectbluefin/finpilot"* ]]
+    [[ "${args}" == *"--cache-from ghcr.io/jhxnnat/finpilot"* ]]
     [[ "${args}" != *"--cache-to"* ]]
 }
 
 @test "build: writes the layer cache when REGISTRY_CACHE_WRITE=1" {
     REGISTRY_CACHE_WRITE=1 run_just build finpilot stable
     [ "$status" -eq 0 ]
-    [[ "$(podman_build_args)" == *"--cache-to ghcr.io/projectbluefin/finpilot"* ]]
+    [[ "$(podman_build_args)" == *"--cache-to ghcr.io/jhxnnat/finpilot"* ]]
 }
 
 @test "build: skips cache args entirely when the cache ref is unreachable" {
