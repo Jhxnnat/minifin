@@ -1,0 +1,24 @@
+name: Validate Renovate Config
+
+on:
+  pull_request:
+    paths:
+      - ".github/renovate.json"
+      - ".github/workflows/renovate.yml"
+      - ".github/workflows/validate-renovate.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/renovate.json"
+      - ".github/workflows/renovate.yml"
+      - ".github/workflows/validate-renovate.yml"
+
+permissions:
+  {}
+
+jobs:
+  validate:
+    permissions:
+      contents: read
+    uses: projectbluefin/actions/.github/workflows/reusable-validate-renovate.yml@f55c40caae7abf265b1f914dae21c519d1f18716 # v1
