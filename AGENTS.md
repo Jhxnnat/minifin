@@ -22,8 +22,8 @@ These hold for every change:
 production, and it never rebuilds — `execute-release.yml` promotes the exact
 digest `main` already built. Promotion is `main` → `stable` through the
 auto-opened squash PR, and `stable` hotfixes sync back to `main`. `stable` takes
-no direct commits. The README owns the release table and the promotion gate's
-current limits.
+no direct commits. The `ci` skill owns the release model and the promotion
+gate's current limits.
 
 ## Pull request comments
 

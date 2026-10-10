@@ -41,11 +41,10 @@ CI runs the same checks; running them locally only makes the pull request quiet.
 
 ## Runtime
 
-The two most common first-boot surprises — no Flatpaks, and no `brew` — are in
-the README's Troubleshooting section.
-
 | Symptom | Cause | Fix |
 |---|---|---|
+| no Flatpaks on first boot | `flatpak-preinstall.service` cannot reach Flathub; it reports success and installs nothing | get online and reboot — it does not retry that boot |
+| no `brew` after first boot | `brew-setup.service` unpacks Homebrew on first boot | check `systemctl status brew-setup.service` before reinstalling |
 | `ujust` shows no custom commands | `60-custom.just` was not written or imported | check that `10-overlay.sh` copied the recipes |
 
 ## Capturing what you learned

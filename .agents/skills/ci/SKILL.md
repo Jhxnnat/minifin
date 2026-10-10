@@ -28,10 +28,13 @@ Most are thin callers of reusable workflows in `projectbluefin/actions`.
 
 ## The release model
 
-`main` publishes `:stable-testing`. `stable` never rebuilds: promotion is a
-squash PR from `main` to `stable`, and `execute-release.yml` copies the digest
-`:testing` resolves to. The README owns the release table and the promotion
-gate's current limits.
+`main` publishes `:stable-testing`; `stable` publishes `:stable` and never
+rebuilds: promotion is a squash PR from `main` to `stable`, and
+`execute-release.yml` copies the digest `:testing` resolves to.
+
+The promotion gate checks the digest and the signature only. It runs no
+end-to-end tests, so `release/ready` means "signed and unmodified", not
+"functionally validated".
 
 The factory reusable puts its release gate and its auto-merge enrollment behind
 one input, `enqueue_promotion`. A personal repository cannot enroll — there is no
