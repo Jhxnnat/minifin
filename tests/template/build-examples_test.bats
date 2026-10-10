@@ -1,7 +1,8 @@
 #!/usr/bin/env bats
-# Tests for the inactive build examples: build/*.sh.example.
+# Tests for the build scripts: the inactive build/*.sh.example files and the
+# executable bit an activated phase needs.
 #
-# These four files are the only shell in the repository that nothing else
+# The example files are the only shell in the repository that nothing else
 # checks. `just lint` and pr-validation.yml both resolve their scope from
 # `git ls-files '*.sh'`, which does not match a `.sh.example` suffix, and the
 # Containerfile never runs them. A contributor activates one by renaming it,
@@ -84,6 +85,18 @@ setup() {
         activated="$(basename "${example}" .example)"
         grep -qF "${activated}" "${example}" || {
             echo "${example}: header never mentions '${activated}'" >&2
+            return 1
+        }
+    done
+}
+
+@test "every activated phase script is executable" {
+    # The Containerfile execs /ctx/build/<phase>.sh directly. A .example file
+    # carries no executable bit, so activating one without `chmod +x` fails the
+    # build at that RUN step with exit 126 (permission denied).
+    for script in "${BUILD_DIR}"/[0-9][0-9]-*.sh; do
+        [ -x "${script}" ] || {
+            echo "${script} is not executable" >&2
             return 1
         }
     done

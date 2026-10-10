@@ -25,9 +25,11 @@ Inactive until you activate them:
 - `50-nvidia.sh.example` — NVIDIA drivers and CDI container support
 - `60-desktop-swap.sh.example` — replacing the GNOME desktop
 
-To activate one, rename it off `.example` and add a `RUN` block to the
-Containerfile after the package phase and before the cleanup phase. Copy the
-shape below and substitute your script's path:
+To activate one, rename it off `.example`, make it executable (`chmod +x`),
+and add a `RUN` block to the Containerfile after the package phase and before
+the cleanup phase. The Containerfile executes each script directly, and an
+`.example` carries no executable bit. Copy the shape below and substitute your
+script's path:
 
 ```dockerfile
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \

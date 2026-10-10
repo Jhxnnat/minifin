@@ -75,8 +75,10 @@ value, so build through `just`; a bare `podman build .` is unsupported.
 ## Examples
 
 `build/*.sh.example` are inactive until you activate them: rename the file off
-`.example` and add a `RUN` block after the package phase.
-[build/README.md](../../../build/README.md) has the block to copy.
+`.example`, `chmod +x` it, and add a `RUN` block after the package phase — the
+Containerfile executes each phase directly, and an `.example` carries no
+executable bit. [build/README.md](../../../build/README.md) has the block to
+copy.
 
 `50-nvidia.sh.example` pulls `ghcr.io/ublue-os/akmods-nvidia-open` through a
 `skopeo` policy that accepts only images signed by `build/akmods-cosign.pub`, a
